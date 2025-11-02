@@ -1,0 +1,82 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node* prev;
+};
+
+// Function to reverse every group of k nodes
+Node* reverseInGroups(Node* head, int k) {
+    Node* current = head;
+    Node* next = NULL;
+    Node* prev = NULL;
+    int count = 0;
+
+    // Step 1: Reverse first k nodes
+    while (current != NULL && count < k) {
+        next = current->next;     // store next node
+        current->next = prev;     // reverse next link
+        current->prev = next;     // reverse prev link
+        prev = current;           // move prev forward
+        current = next;           // move to next node
+        count++;
+    }
+
+    // Step 2: head now points to the last node of this reversed group
+    if (next != NULL) {
+        // Recursively reverse remaining list
+        head->next = reverseInGroups(next, k);
+        // Fix the backward link of the next group
+        if (head->next != NULL)
+            head->next->prev = head;
+    }
+
+    // Step 3: Return new head (prev is the new head of this segment)
+    return prev;
+}
+
+// Insert node at end
+void insertEnd(Node** head_ref, int data) {
+    Node* newNode = new Node{data, NULL, NULL};
+    if (*head_ref == NULL) {
+        *head_ref = newNode;
+        return;
+    }
+    Node* temp = *head_ref;
+    while (temp->next != NULL)
+        temp = temp->next;
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+// Print list
+void printList(Node* head) {
+    while (head != NULL) {
+        cout << head->data << " ";
+        head = head->next;
+    }
+    cout << endl;
+}
+
+// Driver code
+int main() {
+    Node* head = NULL;
+
+    // Create doubly linked list: 10 ⇄ 20 ⇄ 30 ⇄ 40 ⇄ 50 ⇄ 60 ⇄ 70
+    for (int i = 10; i <= 70; i += 10)
+        insertEnd(&head, i);
+
+    int k = 3;
+
+    cout << "Original List: ";
+    printList(head);
+
+    head = reverseInGroups(head, k);
+
+    cout << "Reversed in groups of " << k << ": ";
+    printList(head);
+
+    return 0;
+}
