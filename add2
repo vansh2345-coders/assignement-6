@@ -1,0 +1,82 @@
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* prev;
+    Node* next;
+};
+
+// Function to delete all even nodes
+void deleteEven(Node** head_ref) {
+    Node* temp = *head_ref;
+
+    while (temp != NULL) {
+        Node* nextNode = temp->next;  // store next before deleting
+
+        if (temp->data % 2 == 0) { // check if even
+            // if deleting head node
+            if (temp == *head_ref)
+                *head_ref = temp->next;
+
+            // connect previous node to next node
+            if (temp->prev != NULL)
+                temp->prev->next = temp->next;
+
+            // connect next node back to previous node
+            if (temp->next != NULL)
+                temp->next->prev = temp->prev;
+
+            delete temp; // remove node from memory
+        }
+
+        temp = nextNode; // move to next node
+    }
+}
+
+// Helper function to insert node at end
+void push(Node** head_ref, int data) {
+    Node* newNode = new Node{data, NULL, NULL};
+
+    if (*head_ref == NULL) {
+        *head_ref = newNode;
+        return;
+    }
+
+    Node* temp = *head_ref;
+    while (temp->next != NULL)
+        temp = temp->next;
+
+    temp->next = newNode;
+    newNode->prev = temp;
+}
+
+// Print the doubly linked list
+void printList(Node* head) {
+    while (head != NULL) {
+        cout << head->data << " ";
+        head = head->next;
+    }
+    cout << endl;
+}
+
+int main() {
+    Node* head = NULL;
+
+    // Create list: 10 ⇄ 15 ⇄ 22 ⇄ 33 ⇄ 40
+    push(&head, 10);
+    push(&head, 15);
+    push(&head, 22);
+    push(&head, 33);
+    push(&head, 40);
+
+    cout << "Before deletion: ";
+    printList(head);
+
+    deleteEven(&head);
+
+    cout << "After deletion: ";
+    printList(head);
+
+    return 0;
+}
